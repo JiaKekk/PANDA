@@ -84,13 +84,13 @@ def sigmoid(X):
 
 
 #nolinear
-def generate_data_nolinear(corval,beta,n,p):
+def generate_data_nolinear(corval,beta,n,p,sin_index,exp_index):
     mean=np.zeros(p)
     sigma=np.array([[corval**abs(i-j) for i in range(p)] for j in range(p)])
     x_pre=torch.tensor(np.random.multivariate_normal(mean=mean,cov=sigma,size=n))
     x=torch.clone(x_pre)
     
-    x[:,sin_index]=np.sin(4*pi*x_pre[:,sin_index])
+    x[:,sin_index]=np.sin(4*np.pi*x_pre[:,sin_index])
     x[:,exp_index]=x_pre[:,exp_index]*x_pre[:,exp_index]*x_pre[:,exp_index]
     
     Pi_test= sigmoid(x@beta)

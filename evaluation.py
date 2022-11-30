@@ -36,13 +36,14 @@ def cubic_root(x):
 
 
 # variable selection eveluation
-def variable_selection(threshold,model_1_weight,model_2_weight,model_3_weight,beta_1,p):
+def variable_selection_homo_inte(threshold,model_1_weight,model_2_weight,model_3_weight,beta_1,p):
     mcl_w=np.zeros(p)
 
     for j in range(p):
         mcl_w[j]=cubic_root(model_1_weight[0,j]*model_2_weight[0,j]*model_3_weight[0,j])
 
     max_mcl_w=max(abs(mcl_w))
+    
     for j in range(p):
         if (abs(mcl_w[j]))<=threshold*max_mcl_w:
             model_1_weight[0,j]=0
@@ -55,7 +56,7 @@ def variable_selection(threshold,model_1_weight,model_2_weight,model_3_weight,be
     
     index=np.nonzero(model_1_weight)[1]
 
-    
+   
     beta=np.array(beta_1)
     trueindex=np.where(beta!=0)[0]
     trueindex=trueindex.tolist()
@@ -72,3 +73,35 @@ def variable_selection(threshold,model_1_weight,model_2_weight,model_3_weight,be
     return index,TP,FP,FN,TN
 
 
+
+# variable selection eveluation
+def variable_selection_homo_DFS(threshold,model_weight,beta_1,p):
+    mcl_w=np.zeros(p)
+
+    for j in range(p):
+        mcl_w[j]=model_weight[0,j]
+
+    max_mcl_w=max(abs(mcl_w))
+    for j in range(p):
+        if (abs(mcl_w[j]))<=threshold*max_mcl_w:
+            model_weight[0,j]=0
+        else:
+            model_weight[0,j]=model_weight[0,j]
+    
+    index=np.nonzero(model_weight)[1]
+    
+    beta=np.array(beta_1)
+    trueindex=np.where(beta!=0)[0]
+    trueindex=trueindex.tolist()
+    trueindex=set(trueindex)
+    
+    index=np.nonzero(model_weight)[1]
+    index=index.tolist()
+    index=set(index)
+    
+    TP=len(trueindex.intersection(index))
+    FP=len(np.setdiff1d(index,trueindex))
+    FN=len(trueindex)-TP
+    TN=p-len(trueindex)-FP
+    
+    return index,TP,FP,FN,TN
